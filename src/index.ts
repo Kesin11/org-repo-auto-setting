@@ -12,10 +12,9 @@ const initSetupIssueTitle = "Initial setup issue"
 // see: https://developer.github.com/v3/repos/branches/#update-branch-protection
 const previewHeaders = { accept: 'application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json' }
 
-// TODO: choice from multiple check box avoid duplicate fireing hook when one checkbox is already checked.
-// maybe two phase step is better. eg: select and comment "setup",
 // TODO: setup 'repository' config
-// TODO: show multiple config preset
+// TODO: show multiple config preset with separating each settings
+// TODO: detect choice and setup with mutual excluesive.
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -34,20 +33,27 @@ export = (app: Application) => {
     await context.github.issues.create(param)
   })
 
-  // Response comment when labels check box is checked.
-  app.on('issues.edited', async (context) => {
-    app.log('issues.edited')
+  app.on('issue_comment.created', async (context) => {
+    if (context.isBot) return
+
+    app.log('issue_comment.created')
     app.log(context)
 
     if (context.payload.issue.title !== initSetupIssueTitle) return
+    if (!context.payload.comment.body.match(new RegExp('setup'))) return
 
-    const matched = context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))
-    if (!matched) return
+    // Response comment when labels check box is checked.
+    if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
+      await setupLabel(context)
+    }
 
-    await setupLabel(context)
+    // Response comment when bransh check box is checked.
+    if(context.payload.issue.body.match(new RegExp(branchCheckboxPattern))) {
+      await setupBranch(context)
+    }
 
     const param = context.issue({
-      body: `Done setup labels!`
+      body: `Setup finished!`
     })
     await context.github.issues.createComment(param)
   })
@@ -85,24 +91,6 @@ export = (app: Application) => {
     return config
   }
 
-  // Response comment when bransh check box is checked.
-  app.on('issues.edited', async (context) => {
-    app.log('issues.edited')
-    app.log(context)
-
-    if (context.payload.issue.title !== initSetupIssueTitle) return
-
-    const matched = context.payload.issue.body.match(new RegExp(branchCheckboxPattern))
-    if (!matched) return
-
-    await setupBranch(context)
-
-    const param = context.issue({
-      body: `Done setup branch settings!`
-    })
-    await context.github.issues.createComment(param)
-  })
-
   const setupBranch = async (context: Context) => {
     const config = loadConfig('default')
     const branches = config.branches
@@ -111,6 +99,7 @@ export = (app: Application) => {
       branches
         .filter((branch: any) => branch.protection !== undefined)
         .map(((branch: any) => {
+          context.log(`setup branch protection: ${branch.name}`)
           const params = context.repo({
             headers: previewHeaders,
             branch: branch.name,
