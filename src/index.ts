@@ -17,13 +17,11 @@ export = (app: Application) => {
   app.on('repository.created', async (context) => {
     app.log('repository.created')
     app.log(context)
-    const issueParameter = {
-      owner: context.payload.repository.owner.login,
-      repo: context.payload.repository.name,
+    const param = context.repo({
       title: initSetupIssueTitle,
       body: `Text here\n- [ ] ${checkboxSecretStr} setup labels`
-    }
-    await context.github.issues.create(issueParameter)
+    })
+    await context.github.issues.create(param)
   })
 
   // Response comment when check box is checked.
@@ -36,18 +34,15 @@ export = (app: Application) => {
     const matched = context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))
     if (!matched) return
 
-    await setupLabel(app, context)
+    await setupLabel(context)
 
-    const issueParameter = {
-      owner: context.payload.repository.owner.login,
-      repo: context.payload.repository.name,
-      number: context.payload.issue.number,
+    const param = context.issue({
       body: `Done setup labels!`
-    }
-    await context.github.issues.createComment(issueParameter)
+    })
+    await context.github.issues.createComment(param)
   })
 
-  const setupLabel = async (app:Application, context: Context) => {
+  const setupLabel = async (context: Context) => {
     const listLabelParam = {
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
@@ -55,24 +50,20 @@ export = (app: Application) => {
     const labels = await context.github.issues.listLabelsForRepo(listLabelParam)
     // delete all of labels
     for (const label of labels.data) {
-      const param = {
-        owner: context.payload.repository.owner.login,
-        repo: context.payload.repository.name,
+      const param = context.repo({
         name: label.name
-      }
-      app.log(`Delete label: { name: ${label.name} }`)
+      })
+      context.log(`Delete label: { name: ${label.name} }`)
       await context.github.issues.deleteLabel(param)
     }
 
     // setup new labels
     for (const label of newLabels ) {
-      const param = {
-        owner: context.payload.repository.owner.login,
-        repo: context.payload.repository.name,
+      const param = context.repo({
         name: label.name,
         color: label.color,
-      }
-      app.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
+      })
+      context.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
       await context.github.issues.createLabel(param)
     }
   }
