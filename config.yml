@@ -1,6 +1,0 @@
-labels:
-  default:
-    - name: "WIP"
-      color: "ffff00"
-    - name: "InReview"
-      color: "0000ff"

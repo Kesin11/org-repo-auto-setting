@@ -4,7 +4,18 @@ import fs from 'fs'
 import path from 'path'
 const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
+const branchCheckboxSecret = "<!-- poc-branch -->"
+const branchCheckboxPattern = `- \\[x\\] ${branchCheckboxSecret}`
 const initSetupIssueTitle = "Initial setup issue"
+
+// for github preview api
+// see: https://developer.github.com/v3/repos/branches/#update-branch-protection
+const previewHeaders = { accept: 'application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json' }
+
+// TODO: choice from multiple check box avoid duplicate fireing hook when one checkbox is already checked.
+// maybe two phase step is better. eg: select and comment "setup",
+// TODO: setup 'repository' config
+// TODO: show multiple config preset
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -23,7 +34,7 @@ export = (app: Application) => {
     await context.github.issues.create(param)
   })
 
-  // Response comment when check box is checked.
+  // Response comment when labels check box is checked.
   app.on('issues.edited', async (context) => {
     app.log('issues.edited')
     app.log(context)
@@ -57,8 +68,8 @@ export = (app: Application) => {
     }
 
     // setup new labels
-    const config = loadConfig(context)
-    const newLabels = config.labels.default
+    const config = loadConfig('default')
+    const newLabels = config.labels
     for (const label of newLabels ) {
       const param = context.repo({
         ...label
@@ -68,12 +79,47 @@ export = (app: Application) => {
     }
   }
 
-  const loadConfig = (context: Context) => {
-    const filePath = path.join(__dirname, '../config.yml')
+  const loadConfig = (configName: string) => {
+    const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
     const config = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'))
-    context.log('load config')
-    context.log(config)
     return config
+  }
+
+  // Response comment when bransh check box is checked.
+  app.on('issues.edited', async (context) => {
+    app.log('issues.edited')
+    app.log(context)
+
+    if (context.payload.issue.title !== initSetupIssueTitle) return
+
+    const matched = context.payload.issue.body.match(new RegExp(branchCheckboxPattern))
+    if (!matched) return
+
+    await setupBranch(context)
+
+    const param = context.issue({
+      body: `Done setup branch settings!`
+    })
+    await context.github.issues.createComment(param)
+  })
+
+  const setupBranch = async (context: Context) => {
+    const config = loadConfig('default')
+    const branches = config.branches
+
+    return Promise.all(
+      branches
+        .filter((branch: any) => branch.protection !== undefined)
+        .map(((branch: any) => {
+          const params = context.repo({
+            headers: previewHeaders,
+            branch: branch.name,
+            ...branch.protection,
+          })
+
+          context.github.repos.updateBranchProtection(params)
+        }))
+    )
   }
 
   // const githubDefaultLables = [
