@@ -1,11 +1,10 @@
 import { Application, Context } from 'probot' // eslint-disable-line no-unused-vars
+import yaml from 'js-yaml'
+import fs from 'fs'
+import path from 'path'
 const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
 const initSetupIssueTitle = "Initial setup issue"
-const newLabels = [
-  { name: "WIP", color: "ffff00" },
-  { name: "InReview", color: "0000ff" },
-]
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -58,17 +57,24 @@ export = (app: Application) => {
     }
 
     // setup new labels
+    const config = loadConfig(context)
+    const newLabels = config.labels.default
     for (const label of newLabels ) {
       const param = context.repo({
-        name: label.name,
-        color: label.color,
+        ...label
       })
       context.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
       await context.github.issues.createLabel(param)
     }
   }
 
-  // TODO: load config from .github/init_setup.yml
+  const loadConfig = (context: Context) => {
+    const filePath = path.join(__dirname, '../config.yml')
+    const config = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'))
+    context.log('load config')
+    context.log(config)
+    return config
+  }
 
   // const githubDefaultLables = [
   //   {
