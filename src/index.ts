@@ -6,15 +6,17 @@ const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
 const branchCheckboxSecret = "<!-- poc-branch -->"
 const branchCheckboxPattern = `- \\[x\\] ${branchCheckboxSecret}`
+const repositoryCheckboxSecret = "<!-- poc-repository -->"
+const repositoryCheckboxPattern = `- \\[x\\] ${repositoryCheckboxSecret}`
 const initSetupIssueTitle = "Initial setup issue"
 
 // for github preview api
 // see: https://developer.github.com/v3/repos/branches/#update-branch-protection
 const previewHeaders = { accept: 'application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json' }
 
-// TODO: setup 'repository' config
 // TODO: show multiple config preset with separating each settings
 // TODO: detect choice and setup with mutual excluesive.
+// TODO: Add github default config
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -42,14 +44,19 @@ export = (app: Application) => {
     if (context.payload.issue.title !== initSetupIssueTitle) return
     if (!context.payload.comment.body.match(new RegExp('setup'))) return
 
-    // Response comment when labels check box is checked.
+    // Setup labels when labels check box is checked.
     if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
       await setupLabel(context)
     }
 
-    // Response comment when bransh check box is checked.
+    // Setup branch protection when branch check box is checked.
     if(context.payload.issue.body.match(new RegExp(branchCheckboxPattern))) {
       await setupBranch(context)
+    }
+
+    // Setup repository settings when repository check box is checked.
+    if(context.payload.issue.body.match(new RegExp(repositoryCheckboxPattern))) {
+      await setupRepository(context)
     }
 
     const param = context.issue({
@@ -109,6 +116,19 @@ export = (app: Application) => {
           context.github.repos.updateBranchProtection(params)
         }))
     )
+  }
+
+  const setupRepository = async (context: Context) => {
+    // setup repository
+    const config = loadConfig('default')
+    const commonParams = context.repo()
+    const params = context.repo({
+      // NOTE: workaround. oktokit doc says not required, but actually it required.
+      name: commonParams.repo,
+      ...config.repository
+    })
+    context.log('setup repository')
+    await context.github.repos.update(params)
   }
 
   // const githubDefaultLables = [
