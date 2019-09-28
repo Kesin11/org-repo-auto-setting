@@ -15,7 +15,7 @@ describe('My Probot app', () => {
   let probot: any
 
   beforeEach(() => {
-    probot = new Probot({ id: 123, cert: 'test' })
+    probot = new Probot({})
     // Load our app into probot
     const app = probot.load(myProbotApp)
 
@@ -23,22 +23,22 @@ describe('My Probot app', () => {
     app.app = () => 'test'
   })
 
-  test('creates a comment when an issue is opened', async (done) => {
+  test('creates a issue when an repository is created', async (done) => {
     // Test that we correctly return a test token
     nock('https://api.github.com')
       .post('/app/installations/2/access_tokens')
       .reply(200, { token: 'test' })
 
-    // Test that a comment is posted
+    // Test that a create new issue
     nock('https://api.github.com')
-      .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
-        done(expect(body).toMatchObject(issueCreatedBody))
+      .post('/repos/hiimbex/testing-things/issues', (body: any) => {
+        done(expect(body).not.toBeNull()) // FIXME: check body content
         return true
       })
       .reply(200)
 
     // Receive a webhook event
-    await probot.receive({ name: 'issues', payload })
+    await probot.receive({ name: 'repository.created', payload })
   })
 })
 
