@@ -2,6 +2,8 @@ import { Application, Context } from 'probot' // eslint-disable-line no-unused-v
 import yaml from 'js-yaml'
 import fs from 'fs'
 import path from 'path'
+import { AppConfig } from './app_config'
+import { Label } from './setting/label'
 const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
 const branchCheckboxSecret = "<!-- poc-branch -->"
@@ -13,10 +15,6 @@ const initSetupIssueTitle = "Initial setup issue"
 // for github preview api
 // see: https://developer.github.com/v3/repos/branches/#update-branch-protection
 const previewHeaders = { accept: 'application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json' }
-
-// TODO: show multiple config preset with separating each settings
-// TODO: detect choice and setup with mutual excluesive.
-// TODO: Add github default config
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -33,6 +31,10 @@ export = (app: Application) => {
       body: `Text here\n- [ ] ${checkboxSecretStr} setup labels`
     })
     await context.github.issues.create(param)
+
+    const config = new AppConfig('default')
+    const label = new Label(context, config.labels)
+    await label.setup()
   })
 
   app.on('issue_comment.created', async (context) => {
@@ -44,10 +46,11 @@ export = (app: Application) => {
     if (context.payload.issue.title !== initSetupIssueTitle) return
     if (!context.payload.comment.body.match(new RegExp('setup'))) return
 
+    // TODO: Using Label class
     // Setup labels when labels check box is checked.
-    if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
-      await setupLabel(context)
-    }
+    // if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
+    //   await setupLabel(context)
+    // }
 
     // Setup branch protection when branch check box is checked.
     if(context.payload.issue.body.match(new RegExp(branchCheckboxPattern))) {
@@ -64,33 +67,6 @@ export = (app: Application) => {
     })
     await context.github.issues.createComment(param)
   })
-
-  const setupLabel = async (context: Context) => {
-    const listLabelParam = {
-      owner: context.payload.repository.owner.login,
-      repo: context.payload.repository.name,
-    }
-    const labels = await context.github.issues.listLabelsForRepo(listLabelParam)
-    // delete all of labels
-    for (const label of labels.data) {
-      const param = context.repo({
-        name: label.name
-      })
-      context.log(`Delete label: { name: ${label.name} }`)
-      await context.github.issues.deleteLabel(param)
-    }
-
-    // setup new labels
-    const config = loadConfig('default')
-    const newLabels = config.labels
-    for (const label of newLabels ) {
-      const param = context.repo({
-        ...label
-      })
-      context.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
-      await context.github.issues.createLabel(param)
-    }
-  }
 
   const loadConfig = (configName: string) => {
     const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
