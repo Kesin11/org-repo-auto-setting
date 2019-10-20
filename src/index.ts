@@ -3,6 +3,7 @@ import { AppConfig } from './app_config'
 import { Label } from './setting/label'
 import { Branches } from './setting/branches'
 import { Repository } from './setting/repository'
+import { Issue } from './issue'
 const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
 const branchCheckboxSecret = "<!-- poc-branch -->"
@@ -21,13 +22,12 @@ export = (app: Application) => {
   app.on('repository.created', async (context) => {
     app.log('repository.created')
     app.log(context)
-    const param = context.repo({
-      title: initSetupIssueTitle,
-      body: `Text here\n- [ ] ${checkboxSecretStr} setup labels`
-    })
-    await context.github.issues.create(param)
-
     const config = new AppConfig('default')
+
+    // TODO: correct all config yaml
+    const issue = new Issue(context, [config])
+    await issue.createIssue()
+
     const label = new Label(context, config.labels)
     await label.setup()
   })
@@ -61,10 +61,9 @@ export = (app: Application) => {
       await repository.setup()
     }
 
-    const param = context.issue({
-      body: `Setup finished!`
-    })
-    await context.github.issues.createComment(param)
+    // TODO: correct all config yaml
+    const issue = new Issue(context, [config])
+    await issue.createComment('Setup finished!')
   })
 
   // const githubDefaultLables = [
