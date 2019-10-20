@@ -8,16 +8,21 @@ export type LabelConfig = {
  }
 export type RepositoryConfig = { [key: string]: string }
 export type BranchConfig = {
-  name: string,
+  name: string
   protection: { [key: string]: string }
 }
-export type IssueConfig = { [key: string]: string }
+export type DescriptionConfig = {
+  name: string
+  label?: string
+  repository?: string
+  branch?: string
+}
 
 export class AppConfig {
   labels: LabelConfig[]
   repository: RepositoryConfig
   branches: BranchConfig[]
-  issue: IssueConfig
+  description: DescriptionConfig
   
   constructor(configName: string) {
     const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
@@ -26,6 +31,6 @@ export class AppConfig {
     this.labels = config.labels || [ {} ]
     this.repository = config.repository || {}
     this.branches = config.branches || [ {} ]
-    this.issue = config.issue || {}
+    this.description = config.description || {}
   }
 }

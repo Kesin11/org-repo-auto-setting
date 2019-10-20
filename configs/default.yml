@@ -1,8 +1,10 @@
 # see: https://github.com/probot/settings
 
-issue_description:
-  labels: Setup `WIP` and `In Review` labels.
-  branches: Protect master branch.
+descriptions:
+  name: Default
+  label: Setup `WIP` and `In Review` labels.
+  repository: Disable wiki and projects.
+  branch: Protect master branch.
 
 labels:
   - name: "WIP"
