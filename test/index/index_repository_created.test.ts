@@ -1,8 +1,8 @@
 import nock from 'nock'
 import { Probot } from 'probot'
-import myProbotApp from '../src'
-import payload from './fixtures/issues.opened.json'
-import labelsPayload from './fixtures/labels.default.json'
+import myProbotApp from '../../src'
+import payload from '../fixtures/issues.opened.json'
+import labelsPayload from '../fixtures/labels.default.json'
 
 nock.disableNetConnect()
 jest.setTimeout(10000)

@@ -33,4 +33,12 @@ export class AppConfig {
     this.branches = config.branches || [ {} ]
     this.description = config.description || {}
   }
+
+  static createAllConfigs() {
+    const dirPath = path.join(__dirname, '..', 'configs')
+    const configNames = fs.readdirSync(dirPath)
+      .map((file) => path.basename(file, '.yml'))
+
+    return configNames.map((configName) => new AppConfig(configName))
+  }
 }

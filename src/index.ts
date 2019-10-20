@@ -22,12 +22,12 @@ export = (app: Application) => {
   app.on('repository.created', async (context) => {
     app.log('repository.created')
     app.log(context)
-    const config = new AppConfig('default')
 
-    // TODO: correct all config yaml
-    const issue = new Issue(context, [config])
+    const allConfigs = AppConfig.createAllConfigs()
+    const issue = new Issue(context, allConfigs)
     await issue.createIssue()
 
+    const config = new AppConfig('default')
     const label = new Label(context, config.labels)
     await label.setup()
   })
