@@ -1,14 +1,8 @@
-// You can import your modules
-// import index from '../src/index'
-
 import nock from 'nock'
-// Requiring our app implementation
-import myProbotApp from '../src'
 import { Probot } from 'probot'
-// Requiring our fixtures
+import myProbotApp from '../src'
 import payload from './fixtures/issues.opened.json'
 import labelsPayload from './fixtures/labels.default.json'
-const issueCreatedBody = { body: 'Thanks for opening this issue!' }
 
 nock.disableNetConnect()
 jest.setTimeout(10000)
@@ -16,7 +10,7 @@ jest.setTimeout(10000)
 const orgRepo = `hiimbex/testing-things`
 
 describe('My Probot app', () => {
-  let probot: any
+  let probot: Probot
 
   beforeEach(() => {
     probot = new Probot({})
