@@ -7,7 +7,10 @@ export type LabelConfig = {
   color: string
  }
 export type RepositoryConfig = { [key: string]: string }
-export type BranchConfig = { [key: string]: string }
+export type BranchConfig = {
+  name: string,
+  protection: { [key: string]: string }
+}
 export type IssueConfig = { [key: string]: string }
 
 export class AppConfig {

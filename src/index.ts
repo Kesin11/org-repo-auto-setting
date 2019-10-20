@@ -1,9 +1,8 @@
 import { Application, Context } from 'probot' // eslint-disable-line no-unused-vars
-import yaml from 'js-yaml'
-import fs from 'fs'
-import path from 'path'
 import { AppConfig } from './app_config'
 import { Label } from './setting/label'
+import { Branches } from './setting/branches'
+import { Repository } from './setting/repository'
 const checkboxSecretStr = "<!-- poc-checkbox -->"
 const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
 const branchCheckboxSecret = "<!-- poc-branch -->"
@@ -11,10 +10,6 @@ const branchCheckboxPattern = `- \\[x\\] ${branchCheckboxSecret}`
 const repositoryCheckboxSecret = "<!-- poc-repository -->"
 const repositoryCheckboxPattern = `- \\[x\\] ${repositoryCheckboxSecret}`
 const initSetupIssueTitle = "Initial setup issue"
-
-// for github preview api
-// see: https://developer.github.com/v3/repos/branches/#update-branch-protection
-const previewHeaders = { accept: 'application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json' }
 
 export = (app: Application) => {
   // app.on('issues', async (context) => {
@@ -46,20 +41,24 @@ export = (app: Application) => {
     if (context.payload.issue.title !== initSetupIssueTitle) return
     if (!context.payload.comment.body.match(new RegExp('setup'))) return
 
-    // TODO: Using Label class
+    const config = new AppConfig('default')
+
     // Setup labels when labels check box is checked.
-    // if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
-    //   await setupLabel(context)
-    // }
+    if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
+      const label = new Label(context, config.labels)
+      await label.setup()
+    }
 
     // Setup branch protection when branch check box is checked.
     if(context.payload.issue.body.match(new RegExp(branchCheckboxPattern))) {
-      await setupBranch(context)
+      const branch = new Branches(context, config.branches)
+      await branch.setup()
     }
 
     // Setup repository settings when repository check box is checked.
     if(context.payload.issue.body.match(new RegExp(repositoryCheckboxPattern))) {
-      await setupRepository(context)
+      const repository = new Repository(context, config.repository)
+      await repository.setup()
     }
 
     const param = context.issue({
@@ -67,45 +66,6 @@ export = (app: Application) => {
     })
     await context.github.issues.createComment(param)
   })
-
-  const loadConfig = (configName: string) => {
-    const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
-    const config = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'))
-    return config
-  }
-
-  const setupBranch = async (context: Context) => {
-    const config = loadConfig('default')
-    const branches = config.branches
-
-    return Promise.all(
-      branches
-        .filter((branch: any) => branch.protection !== undefined)
-        .map(((branch: any) => {
-          context.log(`setup branch protection: ${branch.name}`)
-          const params = context.repo({
-            headers: previewHeaders,
-            branch: branch.name,
-            ...branch.protection,
-          })
-
-          context.github.repos.updateBranchProtection(params)
-        }))
-    )
-  }
-
-  const setupRepository = async (context: Context) => {
-    // setup repository
-    const config = loadConfig('default')
-    const commonParams = context.repo()
-    const params = context.repo({
-      // NOTE: workaround. oktokit doc says not required, but actually it required.
-      name: commonParams.repo,
-      ...config.repository
-    })
-    context.log('setup repository')
-    await context.github.repos.update(params)
-  }
 
   // const githubDefaultLables = [
   //   {
