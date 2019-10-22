@@ -35,38 +35,34 @@ export = (app: Application) => {
     // TODO: setup branch
   })
 
-  app.on('issue_comment.created', async (context) => {
+  app.on('issues.edited', async (context) => {
     if (context.isBot) return
 
-    app.log('issue_comment.created')
+    app.log('issues.edited')
     app.log(context)
 
+    // is not initial setup issue
     if (context.payload.issue.title !== initSetupIssueTitle) return
-    if (!context.payload.comment.body.match(new RegExp('setup'))) return
 
-    const config = new AppConfig('default')
+    const allConfigs = AppConfig.createAllConfigs()
+    const issue = new Issue(context, allConfigs)
 
-    // Setup labels when labels check box is checked.
-    if(context.payload.issue.body.match(new RegExp(checkboxCheckedDetectStr))) {
-      const label = new Label(context, config.labels)
-      await label.setup()
-    }
+    const config = issue.getClickedConfig(context.payload.issue.body)
+    if (!config) return
 
-    // Setup branch protection when branch check box is checked.
-    if(context.payload.issue.body.match(new RegExp(branchCheckboxPattern))) {
-      const branch = new Branches(context, config.branches)
-      await branch.setup()
-    }
+    // Setup labels
+    const label = new Label(context, config.labels)
+    await label.setup()
 
-    // Setup repository settings when repository check box is checked.
-    if(context.payload.issue.body.match(new RegExp(repositoryCheckboxPattern))) {
-      const repository = new Repository(context, config.repository)
-      await repository.setup()
-    }
+    // Setup repository settings
+    const repository = new Repository(context, config.repository)
+    await repository.setup()
 
-    // TODO: correct all config yaml
-    const issue = new Issue(context, [config])
-    await issue.createComment('Setup finished!')
+    // Setup branch protection
+    const branch = new Branches(context, config.branches)
+    await branch.setup()
+
+    await issue.createComment(`Setup ${config.description.name} finished!`)
   })
 
   // const githubDefaultLables = [

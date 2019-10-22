@@ -38,7 +38,6 @@ describe('My Probot app', () => {
 
       // Test that a delete initial labels
       for (const label of labelsPayload.map((label) => encodeURI(label.name))) {
-        console.log(label)
         nock('https://api.github.com')
           .delete(`/repos/${orgRepo}/labels/${label}`)
           .reply(204)
