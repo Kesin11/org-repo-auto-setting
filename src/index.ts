@@ -30,6 +30,9 @@ export = (app: Application) => {
     const config = new AppConfig('default')
     const label = new Label(context, config.labels)
     await label.setup()
+
+    // TODO: setup repository
+    // TODO: setup branch
   })
 
   app.on('issue_comment.created', async (context) => {

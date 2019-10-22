@@ -22,15 +22,11 @@ export class Issue {
   }
 
   issueBody() {
-    const header = `
-    If you want to restore GitHub default settings or other config, click checkbox.
-    `
+    const header = "If you want to restore GitHub default settings or other config, click checkbox."
     
     const checkboxSections = this.appConfigs.map((config) => this.checkboxSection(config)).join('')
 
-    const footer = `
-    If you don't wnat to restore settings or after click checkbox, please close this issue.
-    `
+    const footer = "If you don't wnat to restore settings or after click checkbox, please close this issue."
 
     return [header, checkboxSections, footer].join("\n\n")
   }
@@ -47,6 +43,7 @@ export class Issue {
     if (desc.branch) {
       rows.push(`  - ${desc.branch}`)
     }
+    rows.push('\n')
 
     return rows.join('\n')
   }
