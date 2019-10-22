@@ -26,7 +26,7 @@ export class Issue {
     
     const checkboxSections = this.appConfigs.map((config) => this.checkboxSection(config)).join('')
 
-    const footer = "If you don't wnat to restore settings or after click checkbox, please close this issue."
+    const footer = "If you don't want to restore settings or after click checkbox, please close this issue."
 
     return [header, checkboxSections, footer].join("\n\n")
   }
@@ -43,9 +43,8 @@ export class Issue {
     if (desc.branch) {
       rows.push(`  - ${desc.branch}`)
     }
-    rows.push('\n')
 
-    return rows.join('\n')
+    return rows.join('\n') + "\n"
   }
 
   // Return checked AppConfig

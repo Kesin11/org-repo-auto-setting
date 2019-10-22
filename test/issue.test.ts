@@ -14,7 +14,8 @@ describe('Issue', () => {
 `- [ ] <!-- Default-checkbox --> Default
   - Setup \`WIP\` and \`In Review\` labels.
   - Disable wiki and projects.
-  - Protect master branch.`
+  - Protect master branch.
+`
       )
     })
   })
@@ -27,7 +28,8 @@ describe('Issue', () => {
 - [x] <!-- GitHub default-checkbox --> GitHub default
   - GitHub default label set
   - enable wiki and projets.
-  - No protect branch`
+  - No protect branch
+`
     const actual = issue.getClickedConfig(editedIssueBody)
     const expectConfig = new AppConfig('github')
 
