@@ -50,4 +50,20 @@ export class Issue {
 
     return rows.join('\n')
   }
+
+  // Return checked AppConfig
+  getClickedConfig(editedIssueBody: string): AppConfig | undefined {
+    const checkedCheckbox = editedIssueBody
+      .split("\n")
+      .find((line) => line.match(new RegExp('- \\[x\\]')))
+
+    if (!checkedCheckbox) return
+
+    const matched = checkedCheckbox.match(new RegExp('<!-- .+-checkbox --> (.+)'))
+    if (!matched) return
+    const configName = matched[1]
+
+    return this.appConfigs
+      .find((config) => config.description.name === configName)
+  }
 }

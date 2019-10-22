@@ -1,10 +1,10 @@
 # see: https://github.com/probot/settings
 
-descriptions:
+description:
   name: GitHub default
-  label: Setup `WIP` and `In Review` labels.
-  repository: Disable wiki and projects.
-  branch: Protect master branch.
+  label: GitHub default label set
+  repository: Enable wiki and projects.
+  branch: No protect branch.
 
 labels:
   - name: "WIP"
