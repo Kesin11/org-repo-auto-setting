@@ -4,20 +4,9 @@ import { Label } from './setting/label'
 import { Branches } from './setting/branches'
 import { Repository } from './setting/repository'
 import { Issue } from './issue'
-const checkboxSecretStr = "<!-- poc-checkbox -->"
-const checkboxCheckedDetectStr = `- \\[x\\] ${checkboxSecretStr}`
-const branchCheckboxSecret = "<!-- poc-branch -->"
-const branchCheckboxPattern = `- \\[x\\] ${branchCheckboxSecret}`
-const repositoryCheckboxSecret = "<!-- poc-repository -->"
-const repositoryCheckboxPattern = `- \\[x\\] ${repositoryCheckboxSecret}`
 const initSetupIssueTitle = "Initial setup issue"
 
 export = (app: Application) => {
-  // app.on('issues', async (context) => {
-  //   app.log('issues *')
-  //   app.log(context)
-  // })
-
   // Create initial setup issue when repository created
   app.on('repository.created', async (context) => {
     app.log('repository.created')
