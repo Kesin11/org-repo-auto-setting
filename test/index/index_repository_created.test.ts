@@ -8,6 +8,7 @@ nock.disableNetConnect()
 jest.setTimeout(10000)
 
 const orgRepo = `hiimbex/testing-things`
+const protectionBranch = 'master'
 
 describe('My Probot app', () => {
   let probot: Probot
@@ -47,6 +48,16 @@ describe('My Probot app', () => {
       nock('https://api.github.com')
         .persist() // allow many times
         .post(`/repos/${orgRepo}/labels`)
+        .reply(200)
+
+      // Test that a patch repository settings
+      nock('https://api.github.com')
+        .patch(`/repos/${orgRepo}`)
+        .reply(200)
+
+      // Test that a update protect branches
+      nock('https://api.github.com')
+        .put(`/repos/${orgRepo}/branches/${protectionBranch}/protection`)
         .reply(200)
 
       // Receive a webhook event

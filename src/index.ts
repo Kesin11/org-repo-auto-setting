@@ -20,8 +20,11 @@ export = (app: Application) => {
     const label = new Label(context, config.labels)
     await label.setup()
 
-    // TODO: setup repository
-    // TODO: setup branch
+    const repository = new Repository(context, config.repository)
+    await repository.setup()
+
+    const branch = new Branches(context, config.branches)
+    await branch.setup()
   })
 
   app.on('issues.edited', async (context) => {
