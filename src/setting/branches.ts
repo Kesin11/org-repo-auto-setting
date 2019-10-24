@@ -23,7 +23,7 @@ export class Branches {
             ...branch.protection as any,
           })
 
-          this.context.github.repos.updateBranchProtection(params)
+          return this.context.github.repos.updateBranchProtection(params)
         }))
     )
   }
