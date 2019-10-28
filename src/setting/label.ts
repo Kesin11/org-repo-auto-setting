@@ -16,23 +16,27 @@ export class Label {
       repo: this.context.payload.repository.name,
     }
     const labels = await this.context.github.issues.listLabelsForRepo(listLabelParam)
-    for (const label of labels.data) {
-      const param = this.context.repo({
-        name: label.name
+    await Promise.all(
+      labels.data.map((label) => {
+        const param = this.context.repo({
+          name: label.name
+        })
+        this.context.log(`Delete label: { name: ${label.name} }`)
+        return this.context.github.issues.deleteLabel(param)
       })
-      this.context.log(`Delete label: { name: ${label.name} }`)
-      await this.context.github.issues.deleteLabel(param)
-    }
+    )
   }
 
   // setup new labels
   async createNewLabels() {
-    for (const label of this.config ) {
-      const param = this.context.repo({
-        ...label
+    await Promise.all(
+      this.config.map((label) => {
+        const param = this.context.repo({
+          ...label
+        })
+        this.context.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
+        return this.context.github.issues.createLabel(param)
       })
-      this.context.log(`Create label: { name: ${label.name}, color: ${label.color} }`)
-      await this.context.github.issues.createLabel(param)
-    }
+    )
   }
 }
