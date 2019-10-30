@@ -13,7 +13,7 @@ export class Repository {
       name: commonParams.repo,
       ...this.config
     })
-    this.context.log('setup repository')
+    this.context.log('Setup repository settings', this.config)
     await this.context.github.repos.update(params)
   }
 }

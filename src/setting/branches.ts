@@ -19,7 +19,7 @@ export class Branches {
       branches
         .filter((branch) => branch.protection !== undefined)
         .map(((branch) => {
-          this.context.log(`setup branch protection: ${branch.name}`)
+          this.context.log(`Setup branch protection: ${branch.name}`)
           const params = this.context.repo({
             headers: previewHeaders,
             branch: branch.name,
@@ -38,6 +38,7 @@ export class Branches {
     const protectedBranches = await this.context.github.repos.listBranches(params)
     await Promise.all(
       protectedBranches.data.map((branch) => {
+        this.context.log(`Remove branch protection: ${branch.name}`)
         const params = this.context.repo({
           branch: branch.name
         })
