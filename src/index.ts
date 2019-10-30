@@ -55,5 +55,6 @@ export = (app: Application) => {
     await branch.setup()
 
     await issue.createComment(`Setup ${config.description.name} finished!`)
+    await issue.closeIssue()
   })
 }

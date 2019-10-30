@@ -21,6 +21,13 @@ export class Issue {
     await this.context.github.issues.createComment(param)
   }
 
+  async closeIssue() {
+    const params = this.context.issue({
+      state: "closed" as const
+    })
+    await this.context.github.issues.update(params)
+  }
+
   issueBody() {
     const header = "If you want to restore GitHub default settings or other config, click checkbox."
     
