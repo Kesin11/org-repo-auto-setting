@@ -29,11 +29,11 @@ export class Issue {
   }
 
   issueBody() {
-    const header = "If you want to restore GitHub default settings or other config, click checkbox."
+    const header = "If you want to restore GitHub default settings or other config, please click checkbox."
     
     const checkboxSections = this.appConfigs.map((config) => this.checkboxSection(config)).join('')
 
-    const footer = "If you don't want to restore settings or after click checkbox, please close this issue."
+    const footer = "Close this issue if you do not need to restore your settings."
 
     return [header, checkboxSections, footer].join("\n\n")
   }
