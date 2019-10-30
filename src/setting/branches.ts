@@ -10,8 +10,11 @@ export class Branches {
 
   // setup branches
   async setup() {
-    const branches = this.config
+    // Clean all branch protection
+    await this.removeAllBranchProtection()
 
+    // Create branch protection
+    const branches = this.config
     return Promise.all(
       branches
         .filter((branch) => branch.protection !== undefined)
@@ -25,6 +28,21 @@ export class Branches {
 
           return this.context.github.repos.updateBranchProtection(params)
         }))
+    )
+  }
+
+  async removeAllBranchProtection() {
+    const params = this.context.repo({
+      protected: true
+    })
+    const protectedBranches = await this.context.github.repos.listBranches(params)
+    await Promise.all(
+      protectedBranches.data.map((branch) => {
+        const params = this.context.repo({
+          branch: branch.name
+        })
+        return this.context.github.repos.removeBranchProtection(params)
+      })
     )
   }
 }
