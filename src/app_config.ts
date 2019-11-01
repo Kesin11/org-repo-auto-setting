@@ -23,8 +23,8 @@ export class AppConfig {
   repository: RepositoryConfig
   branches: BranchConfig[]
   description: DescriptionConfig
-  
-  constructor(configName: string) {
+
+  constructor (configName: string) {
     const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
     const config = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'))
 
@@ -34,7 +34,7 @@ export class AppConfig {
     this.description = config.description || {}
   }
 
-  static createAllConfigs() {
+  static createAllConfigs () {
     const dirPath = path.join(__dirname, '..', 'configs')
     const configNames = fs.readdirSync(dirPath)
       .map((file) => path.basename(file, '.yml'))

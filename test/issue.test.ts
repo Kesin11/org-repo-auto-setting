@@ -11,7 +11,7 @@ describe('Issue', () => {
       const defaultConfig = new AppConfig('default')
       const actual = issue.checkboxSection(defaultConfig)
       expect(actual).toBe(
-`- [ ] <!-- Default-checkbox --> Default
+        `- [ ] <!-- Default-checkbox --> Default
   - Setup \`WIP\` and \`In Review\` labels.
   - Disable wiki and projects.
   - Protect master branch.

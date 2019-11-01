@@ -4,7 +4,7 @@ import { Label } from './setting/label'
 import { Branches } from './setting/branches'
 import { Repository } from './setting/repository'
 import { Issue } from './issue'
-const initSetupIssueTitle = "Initial setup issue"
+const initSetupIssueTitle = 'Initial setup issue'
 
 export = (app: Application) => {
   // Create initial setup issue when repository created
