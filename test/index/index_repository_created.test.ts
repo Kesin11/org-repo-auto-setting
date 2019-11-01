@@ -57,6 +57,10 @@ describe('My Probot app', () => {
 
       // Test that a update protect branches
       nock('https://api.github.com')
+        .get(`/repos/${orgRepo}/branches`)
+        .query({ protected: true })
+        .reply(200, [])
+      nock('https://api.github.com')
         .put(`/repos/${orgRepo}/branches/${protectionBranch}/protection`)
         .reply(200)
 
