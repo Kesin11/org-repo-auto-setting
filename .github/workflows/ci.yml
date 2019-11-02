@@ -1,0 +1,21 @@
+name: "CI"
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: "node:lts"
+    steps:
+      - uses: actions/checkout@master
+      - run: npm ci
+      - run: npm run lint
+  
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: "node:lts"
+    steps:
+      - uses: actions/checkout@master
+      - run: npm ci
+      - run: npm run test
