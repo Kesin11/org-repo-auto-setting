@@ -1,4 +1,5 @@
 # probot-sandbox
+[![Build Status](https://github.com/Kesin11/probot-sandbox/workflows/CI/badge.svg)](https://github.com/Kesin11/probot-sandbox/actions)
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) that My first probot app
 
