@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import nock from 'nock'
 import { Probot } from 'probot'
 import myProbotApp from '../../src'
@@ -10,18 +12,24 @@ const orgRepo = `kesin11-bot-dev/probot-test-target7`
 
 describe('My Probot app', () => {
   let probot: Probot
+  let mockCert: any
   let payload: typeof originalPayload
 
+  beforeAll((done) => {
+    fs.readFile(path.join(__dirname, '..', 'fixtures', 'mock-cert.pem'), (err: any, cert: any) => {
+      if (err) return done(err)
+      mockCert = cert
+      done()
+    })
+  })
+
   beforeEach(() => {
-    probot = new Probot({})
+    probot = new Probot({ id: 123, cert: mockCert })
     // Load our app into probot
     const app = probot.load(myProbotApp)
 
     // Copy fixture
     payload = JSON.parse(JSON.stringify(originalPayload))
-
-    // just return a test token
-    app.app = () => 'test'
 
     nock('https://api.github.com')
       .post('/app/installations/1/access_tokens')
