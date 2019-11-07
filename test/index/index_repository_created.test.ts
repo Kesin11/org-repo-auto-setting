@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import nock from 'nock'
 import { Probot } from 'probot'
 import myProbotApp from '../../src'
@@ -12,14 +14,20 @@ const protectionBranch = 'master'
 
 describe('My Probot app', () => {
   let probot: Probot
+  let mockCert: any
+
+  beforeAll((done) => {
+    fs.readFile(path.join(__dirname, '..', 'fixtures', 'mock-cert.pem'), (err: any, cert: any) => {
+      if (err) return done(err)
+      mockCert = cert
+      done()
+    })
+  })
 
   beforeEach(() => {
-    probot = new Probot({})
+    probot = new Probot({ id: 123, cert: mockCert })
     // Load our app into probot
     const app = probot.load(myProbotApp)
-
-    // just return a test token
-    app.app = () => 'test'
   })
 
   describe('on repository.created', () => {
@@ -65,7 +73,7 @@ describe('My Probot app', () => {
         .reply(200)
 
       // Receive a webhook event
-      await probot.receive({ name: 'repository.created', payload })
+      await probot.receive({ id: '1111-test', name: 'repository.created', payload })
       expect(nock.isDone())
     })
   })

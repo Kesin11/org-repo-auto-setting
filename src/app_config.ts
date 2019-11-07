@@ -28,9 +28,9 @@ export class AppConfig {
     const filePath = path.join(__dirname, '..', 'configs', `${configName}.yml`)
     const config = yaml.safeLoad(fs.readFileSync(filePath, 'utf8'))
 
-    this.labels = config.labels || [ {} ]
+    this.labels = config.labels || [{}]
     this.repository = config.repository || {}
-    this.branches = config.branches || [ {} ]
+    this.branches = config.branches || [{}]
     this.description = config.description || {}
   }
 

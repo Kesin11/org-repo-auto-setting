@@ -41,7 +41,7 @@ export class Issue {
 
   checkboxSection (config: AppConfig) {
     const desc = config.description
-    const rows = [ `- [ ] <!-- ${desc.name}-checkbox --> ${desc.name}` ]
+    const rows = [`- [ ] <!-- ${desc.name}-checkbox --> ${desc.name}`]
     if (desc.label) {
       rows.push(`  - ${desc.label}`)
     }
