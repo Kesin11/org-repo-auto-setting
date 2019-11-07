@@ -65,7 +65,7 @@ describe('My Probot app', () => {
         .reply(200)
 
       // Receive a webhook event
-      await probot.receive({ name: 'repository.created', payload })
+      await probot.receive({ id: '1111-test', name: 'repository.created', payload })
       expect(nock.isDone())
     })
   })

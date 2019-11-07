@@ -36,13 +36,13 @@ describe('My Probot app', () => {
       notClickedPayload.changes.body.from = payload.issue.body
 
       // Receive a webhook event
-      await probot.receive({ name: 'issues.edited', payload: notClickedPayload })
+      await probot.receive({ id: '1111-test', name: 'issues.edited', payload: notClickedPayload })
       expect(nock.isDone())
     })
 
     test.skip('Setup when GitHub config checkbox clicked', async () => {
       // Receive a webhook event
-      await probot.receive({ name: 'issues.edited', payload: payload })
+      await probot.receive({ id: '1111-test', name: 'issues.edited', payload: payload })
       expect(nock.isDone())
     })
   })
