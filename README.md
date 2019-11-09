@@ -1,5 +1,5 @@
-# probot-sandbox
-[![Build Status](https://github.com/Kesin11/probot-sandbox/workflows/CI/badge.svg)](https://github.com/Kesin11/probot-sandbox/actions)
+# org-repo-auto-setting
+[![Build Status](https://github.com/Kesin11/org-repo-auto-setting/workflows/CI/badge.svg)](https://github.com/Kesin11/org-repo-auto-setting/actions)
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) that My first probot app
 
@@ -19,14 +19,14 @@ npm start
 ## Setup docker
 
 ```sh
-docker build  -t probot_sandbox:latest .
+docker build  -t org-repo-auto-setting:latest .
 
-docker run -p 50000:50000 probot_sandbox:latest
+docker run -p 50000:50000 org-repo-auto-setting:latest
 ```
 
 ## Contributing
 
-If you have suggestions for how probot-sandbox could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
+If you have suggestions for how org-repo-auto-setting could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
 
 For more, check out the [Contributing Guide](CONTRIBUTING.md).
 

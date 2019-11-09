@@ -1,12 +1,12 @@
 {
-  "name": "probot-sandbox",
+  "name": "org-repo-auto-setting",
   "version": "1.0.0",
   "description": "My first probot app",
   "author": "Kenta Kase <kesin1202000@gmail.com>",
   "license": "ISC",
-  "repository": "https://github.com//probot-sandbox.git",
-  "homepage": "https://github.com//probot-sandbox",
-  "bugs": "https://github.com//probot-sandbox/issues",
+  "repository": "https://github.com/Kesin11/org-repo-auto-setting.git",
+  "homepage": "https://github.com/Kesin11/org-repo-auto-setting",
+  "bugs": "https://github.com/Kesin11/org-repo-auto-setting/issues",
   "keywords": [
     "probot",
     "github",

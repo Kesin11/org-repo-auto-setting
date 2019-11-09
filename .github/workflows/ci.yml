@@ -26,4 +26,4 @@ jobs:
       image: "docker"
     steps:
       - uses: actions/checkout@master
-      - run: docker build -t probot_sandbox .
+      - run: docker build -t org-repo-auto-setting .
