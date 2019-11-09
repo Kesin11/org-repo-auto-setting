@@ -16,6 +16,14 @@ npm run build
 npm start
 ```
 
+## Setup docker
+
+```sh
+docker build  -t probot_sandbox:latest .
+
+docker run -p 50000:50000 probot_sandbox:latest
+```
+
 ## Contributing
 
 If you have suggestions for how probot-sandbox could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
